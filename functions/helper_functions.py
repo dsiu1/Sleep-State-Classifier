@@ -73,8 +73,11 @@ def plotValidation(hypTimeAxis, hypnogramOrig, newPredict):
             storeAccPost[s1,s2] = postPredictAcc;
     accuracy = np.sum(np.diagonal(storeAccPost))/storeAccPost.sum()
     F1 = np.mean([2*storeAccPost[i,i]/(np.sum(storeAccPost[i,:])  + np.sum(storeAccPost[:,i])) for i in range(0,4)])
-                                   
-    print(np.round(storeAccPost,2))
+    
+    df = pd.DataFrame(storeAccPost)
+    df.columns = ["Awake P", "Unc P", "NREM P", "REM P"]
+    df.index = ["Awake N", "Unc N", "NREM N", "REM N"]	
+    print(df)
     return storeAccPost, hFig, accuracy, F1
 
 
