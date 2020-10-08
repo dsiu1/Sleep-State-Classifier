@@ -1,11 +1,9 @@
 ##Running for Python 3.6
 ##Generating keras modeling to predict sleep-wake classification
 
-#from __future__ import absolute_import, division, print_function, unicode_literals
 import tensorflow as tf
 from tensorflow import keras
 import scipy.io
-#import keras
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -14,7 +12,6 @@ import os
 from numpy import genfromtxt
 from datetime import datetime
 import random
-#from keras.models import model_from_json
 from sklearn.model_selection import train_test_split ##Need to randomly split data
 from main import CONFIG_PATH
 
@@ -23,25 +20,14 @@ from helper_functions import *
 from sklearn.preprocessing import normalize
 from operator import itemgetter
 
-#from keras.preprocessing.sequence import pad_sequences
-#from keras.utils import to_categorical
+
 #from keras.layers import Embedding,  LSTM
 from main import CONFIG_PATH
 config = load_config(CONFIG_PATH / "my_config.yaml")
 globals().update(config)
 
 def initializeModel():
-    # model = keras.Sequential()
 
-    # model.add(keras.layers.Dense(10,activation='relu', input_shape=(319,)))
-    # model.add(keras.layers.Dense(64, activation='relu'))
-    # model.add(keras.layers.Dense(256, activation='relu'))
-    # ##model.add(keras.layers.Dense(256, activation='relu'))
-    # model.add(keras.layers.Dense(256, activation='relu'))
-    # model.add(keras.layers.Dropout(0.5))
-    # model.add(keras.layers.Dense(64, activation='relu'))
-    # model.add(keras.layers.Dense(12, activation='relu'))
-    # model.add(keras.layers.Dense(4, activation='softmax',input_shape=(4,)))
     
     ## Batch normalazition 
     model = keras.Sequential()
@@ -53,15 +39,17 @@ def initializeModel():
     model.add(keras.layers.Dense(256, activation='relu'))
     model.add(keras.layers.BatchNormalization())
     
-    ##model.add(keras.layers.Dense(256, activation='relu'))
     model.add(keras.layers.Dense(256, activation='relu'))
     model.add(keras.layers.BatchNormalization())
     
     model.add(keras.layers.Dropout(0.5))
+	
     model.add(keras.layers.Dense(64, activation='relu'))
     model.add(keras.layers.BatchNormalization())
+	
     model.add(keras.layers.Dense(12, activation='relu'))
     model.add(keras.layers.BatchNormalization())
+	
     model.add(keras.layers.Dense(4, activation='softmax',input_shape=(4,)))
     
     return model
@@ -78,19 +66,18 @@ def loadInputData(filename):
     ## Now, call pandas and load data
     train_data = pd.read_csv(DATA_DIR, header=None, delimiter=',').to_numpy()
     train_labels = pd.read_csv(LABEL_DIR, header=None, delimiter=',').to_numpy()
-    # train_labels = keras.utils.to_categorical(train_labels) ##For the DNN to recognize
-    # train_labels = keras.utils.to_categorical(genfromtxt(LABEL_DIR, delimiter=','))
+	
     return train_data, train_labels
 
-
+## Techniques to rebalance the data would be either downsaampling the majority class or artificially 
+## resampling the minority class using SMOTE. Current method is simply downsampling
 def rebalanceData(x_train, y_train):
     ##Check class distribution
     storeAllocated = []
     x_out = np.empty((0,319))
     y_out = np.empty((0,4))
     [print("s" + str(s) + ":" +  str(len(np.argwhere(y_train[:,s] == 1)))) for s in range(0,4)]
-    # storeAllocated = [len(np.argwhere(y_train[:,s] == 1)) for s in range(0,4)]
-    # minNum = storeAllocated[3]
+
     for s in range(0,4):
         toExtract = np.argwhere(y_train[:,s] == 1).flatten()
         storeAllocated.append(toExtract)#y_train[toExtract,])
@@ -106,13 +93,9 @@ def rebalanceData(x_train, y_train):
     y_out = np.append(y_out, np.array(y_train[storeAllocated[1],:]), axis=0)
     
     return x_out, y_out
+	
 ## Feed in data to the neural network that has already been windowed
-## Output is samples x freq x windows
-# def rolling_window(a,window):
-#     shape = (a.shape[-1] - window+1,a.shape[:-1][0],window) #+ window
-#     strides = a.strides + (a.strides[-1],)
-#     return np.lib.stride_tricks.as_strided(a,shape=shape,strides=strides)
-
+## Output is samples x freq x windows. This way, the shape is correct while preserving memory
 def rolling_window(a, window):
     shape = a.shape[:-1] + (a.shape[-1] - window + 1, window)
     strides = a.strides + (a.strides[-1],)
@@ -142,14 +125,10 @@ def run():
     print('Labels: ' + str(train_labels.shape))
     print(train_data[:10,:])
     print(train_labels[:10,:])
-    # train_data = normalize(train_data, axis=1, norm='l2')
     
     acc, val_acc, loss,val_loss = [],[],[],[]
     
-    #model.fit(train_data, train_labels, batch_size=7200, epochs=50, validation_split=0.2, verbose=1,)
-    #(train_images, train_labels), (test_images, test_labels) = fashion_mnist.load_data()
-    #print(train_labels.shape)
-    # plt.show()
+
     ## Running k-folds classification to improve generalization and reduce overfitting
     for i in range(0,10):
     
@@ -157,6 +136,7 @@ def run():
         x_train, x_valid, y_train, y_valid = train_test_split(train_data, train_labels, test_size=0.2, shuffle= True)
         x_train, y_train = rebalanceData(x_train, y_train) ##Utilize a form of downsampling rather than synthetic data
         history = model.fit(x_train, y_train, batch_size=900, epochs=100, validation_data=(x_valid, y_valid), verbose=1)#, callbacks=[lrs])
+		
         # acc.append(history.history['accuracy'])
         # val_acc.acc(history.history['val_accuracy'])
         acc.append(history.history['acc'])
@@ -169,26 +149,20 @@ def run():
     
     print("Starting prediction...")
     predictedHypnogram = model.predict(train_data)
-    # # serialize model to JSON
+    # Serialize model to JSON
     predictedHypnogram = np.array(predictedHypnogram)
-    # numpy.savetxt(WORKING_DIR + "/Hypnogram_" + SESSION_ID + "_" + nameappend + ".csv", a, delimiter=",")
     
     today = datetime.now().strftime('%m_%d_%Y_%H-%M')
     saveName = WORKING_DIR+nameappend+ "_date-" + today+ "_model"
     print('Saving the model on ' + today + " to " + saveName)
-    
-    # model_json = model.to_json()
-    # with open(saveName + ".json", "w") as json_file:
-    #     json_file.write(model_json)
-    # model.save_weights(saveName + ".h5") # serialize weights to HDF5
-    print("Saved model to disk")
     model.save(saveName + "_iter0.h5")
-    
+    print("Saved model to disk")
     
     print("Starting post-processing...this may take a while")
     newPredict, newProbVal = postProcessHypnogram(predictedHypnogram)
-    
     epochs = range(len(acc))
+	
+	# Plot evaluations
     plt.figure()
     plt.subplot(211)
     plt.plot(epochs, acc, 'r', label='Training accuracy')
@@ -202,4 +176,5 @@ def run():
     plt.legend(loc=0)
     plt.show()
     
+	# Plot predicted hypnogram against the ground truth
     storeAcc, hFig = plotValidation(hypTimeAxis, hypnogramOrig, newPredict) ## Plot both the original and DNN output
