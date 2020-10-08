@@ -5,7 +5,7 @@ Created on Sat Sep 12 10:50:56 2020
 @author: danny
 """
 
-from helper_functions import *
+from functions.helper_functions import *
 from pathlib import Path
 import matplotlib.pyplot as plt
 import os
@@ -31,7 +31,7 @@ if __name__ == "__main__":
     SESSION_ID = args.session
     print(args)
     ### Will need to refactor the code to make dependencies less confusing
-    import sleep_wake_classifier_predict,  sleep_wake_classifier_simpler, sleep_wake_classifier_retrain
+    import DNN.sleep_wake_classifier_predict,  DNN.sleep_wake_classifier_simpler, DNN.sleep_wake_classifier_retrain
     hFig = sleep_wake_classifier_predict.run(WORKING_DIR=WORKING_DIR,SESSION_ID=SESSION_ID)
     
     # sleep_wake_classifier_simpler.run()

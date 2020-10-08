@@ -8,7 +8,7 @@ Created on Sat Jul 25 18:31:54 2020
 import numpy as np 
 from statistics import mode
 import collections
-from helper_functions import * 
+from functions.helper_functions import * 
 from main import CONFIG_PATH
 
 config = load_config(CONFIG_PATH / "my_config.yaml")
