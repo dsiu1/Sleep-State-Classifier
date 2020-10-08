@@ -1,13 +1,18 @@
 # -*- coding: utf-8 -*-
 
-## WORKING_DIR should be where the data is located
-WORKING_DIR : G:/sleep_DNN/data/
-SESSION_ID : 02-25
-#SESSION_ID: 2019-08-05_HD
+## Generally defaults set by MATLAB pre-processing
 nameappend : spectrogram_trainedby_ 
 hypFs : 2
 winsize: 10
-currentModel: G:/sleep_DNN/data/spectrogram_trainedby_02-25_date-09_12_2020_21-26_model_iter0
+
+## WORKING_DIR should be the full path to where the data is located
+WORKING_DIR : ?DIR
+
+## SESSION_ID is the name of the file to be trained
+SESSION_ID : ?SES
+
+## Set TRUE to evaluate with ground truth in sleep_wake_classifier_predict.py
+compareHypnograms: 0 
+
 ## curentModel is where the .h5 file is located. Typically in ./BrainState/DNN/python_build/
-c#urrentModel: C:/Users/danny/Documents/MATLAB/Sleep-Wake-Classification/BrainState/DNN/python_build/model_hypnogram
-compareHypnograms: 0
+currentModel: ?PATH/BrainState/DNN/python_build/model_hypnogram
