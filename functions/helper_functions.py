@@ -6,6 +6,7 @@ Created on Sun Jul 26 09:41:45 2020
 """
 import numpy as np
 from scipy import ndimage as nd
+import pandas as pd
 import yaml
 import matplotlib.pyplot as plt
 def fill(data, invalid=None):
@@ -49,11 +50,15 @@ def plotValidation(hypTimeAxis, hypnogramOrig, newPredict):
     hFig = plt.figure()
     plt.subplot(211)
     plt.plot(hypTimeAxis, hypnogramOrig)
+    plt.xticks([])
+    plt.title('Hypnogram Training Results')
+    plt.yticks(ticks=[0,1,2,3], labels=['Awake', 'Unclassified', 'NREM', 'REM'])
     # plt.xlim(0, 3600)
     plt.subplot(212)
     plt.plot(hypTimeAxis, hypnogramOrig, 'r', label='Ground truth hypnogram')
     plt.plot(hypTimeAxis, newPredict, 'b', label='DNN Hypnogram')
-    plt.title('Hypnogram Training Results')
+    plt.yticks(ticks=[0,1,2,3], labels=['Awake', 'Unclassified', 'NREM', 'REM'])
+    plt.xlabel("Time (s)")
     plt.legend(loc=0)
     # plt.xlim(0, 3600)
     plt.show()
@@ -75,9 +80,10 @@ def plotValidation(hypTimeAxis, hypnogramOrig, newPredict):
     F1 = np.mean([2*storeAccPost[i,i]/(np.sum(storeAccPost[i,:])  + np.sum(storeAccPost[:,i])) for i in range(0,4)])
     
     df = pd.DataFrame(storeAccPost)
-    df.columns = ["Awake P", "Unc P", "NREM P", "REM P"]
-    df.index = ["Awake N", "Unc N", "NREM N", "REM N"]	
+    df.columns = ["Awake Actual", "Unc Actual", "NREM Actual", "REM Actual"]
+    df.index = ["Awake Predicted", "Unc Predicted", "NREM Predicted", "REM Predicted"]
     print(df)
+
     return storeAccPost, hFig, accuracy, F1
 
 

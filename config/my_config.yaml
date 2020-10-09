@@ -13,6 +13,12 @@ SESSION_ID : ?SES
 
 ## Set TRUE to evaluate with ground truth in sleep_wake_classifier_predict.py
 compareHypnograms: 0 
+win:  32
+modelCNN: 0
 
-## curentModel is where the .h5 file is located. Typically in ./BrainState/DNN/python_build/
+## currentModel is where the .h5 file is located. Typically in ./BrainState/DNN/python_build/
 currentModel: ?PATH/BrainState/DNN/python_build/model_hypnogram
+
+WORKING_DIR: "G:/sleep_DNN/data"
+SESSION_ID: "02-25"
+currentModel: "G:/sleep_DNN/data/model_hypnogram"

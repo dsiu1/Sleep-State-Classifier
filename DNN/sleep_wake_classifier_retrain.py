@@ -8,7 +8,6 @@ Created on Mon Jul 27 08:51:07 2020
 import tensorflow as tf
 from tensorflow import keras
 import scipy.io
-#import keras
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -18,22 +17,18 @@ import re
 from numpy import genfromtxt
 from datetime import datetime
 import random
-#from keras.models import model_from_json
 from sklearn.model_selection import train_test_split ##Need to randomly split data
-from hypnogram_postprocess import postProcessHypnogram
-from helper_functions import *
+from functions.hypnogram_postprocess import postProcessHypnogram
+from functions.helper_functions import *
 from sklearn.preprocessing import normalize
 from operator import itemgetter
 from main import CONFIG_PATH
-from sleep_wake_classifier_simpler import *
+from DNN.sleep_wake_classifier_simpler import *
 
-from main import CONFIG_PATH
 config = load_config(CONFIG_PATH / "my_config.yaml")
 globals().update(config)
 
 DATA_DIR = '/model_spectrogram_' + SESSION_ID +'_data.csv'
-#from keras.preprocessing.sequence import pad_sequences
-#from keras.utils import to_categorical
 #from keras.layers import Embedding,  LSTM
 
 ## Finds the iteration number. If it doesn't exist, just append to the end of the name
@@ -50,6 +45,7 @@ def getNewIter(saveName):
         saveName = saveName.replace(iterNum, newNum)
     
     return saveName
+	
 ## Assumes that the input file has the same name as the data, but with the word '_labels' 
 ## appended to the end of the file. Assumes labels are already one-hot encoded
 def loadInputData(filename):
@@ -67,17 +63,15 @@ def loadInputData(filename):
 
 def run():
     # Load new test data
-    # SESSION_ID='02-24'
     train_data, train_labels = loadInputData(DATA_DIR)
-    # train_data = normalize(train_data, axis=1, norm='l2')
     hypnogramOrig = onehot_to_array(train_labels)
     hypTimeAxis = np.linspace(1/hypFs, len(hypnogramOrig)/hypFs, len(hypnogramOrig))
-    # load existing model
+	
+    # Load existing model
     loaded_model = keras.models.load_model(currentModel + ".h5")
     print("Loaded model from disk" + currentModel)
     
-    ##Fit new data
-    ## Should rename it anyway
+    ## Fit new data
     for i in range(0,10):
         
         ##Only need to balance the training data, not the validation data.
@@ -103,14 +97,15 @@ def run():
     val_acc = history.history['val_acc']
     loss = history.history['loss']
     val_loss = history.history['val_loss']
-    
     epochs = range(len(acc))
+	
+	# Plot evaluations
     plt.figure()
     plt.plot(epochs, acc, 'r', label='Training accuracy')
     plt.plot(epochs, val_acc, 'b', label='Validation accuracy')
     plt.title('Training and validation accuracy')
     plt.legend(loc=0)
-   
     plt.show()
     
+	# Plot predicted hypnogram against the ground truth
     storeAcc, hFig = plotValidation(hypTimeAxis, hypnogramOrig, newPredict) ## Plot both the original and DNN output

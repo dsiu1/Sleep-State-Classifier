@@ -7,8 +7,8 @@ import numpy
 import pandas as pd
 from numpy import genfromtxt
 from sklearn.model_selection import train_test_split ##Need to randomly split data
-from hypnogram_postprocess import postProcessHypnogram
-from helper_functions import *
+from functions.hypnogram_postprocess import postProcessHypnogram
+from functions.helper_functions import *
 from sklearn.preprocessing import normalize, scale
 from scipy.io import savemat
 # globals().update(config)
@@ -28,8 +28,7 @@ def loadInputData(filename):
     ## Now, call pandas and load data
     train_data = pd.read_csv(DATA_DIR, header=None, delimiter=',').to_numpy()
     train_labels = pd.read_csv(LABEL_DIR, header=None, delimiter=',').to_numpy()
-    # train_labels = keras.utils.to_categorical(train_labels) ##For the DNN to recognize
-    # train_labels = keras.utils.to_categorical(genfromtxt(LABEL_DIR, delimiter=','))
+
     return train_data, train_labels
 
 def run(WORKING_DIR=WORKING_DIR, SESSION_ID=SESSION_ID):
@@ -43,10 +42,11 @@ def run(WORKING_DIR=WORKING_DIR, SESSION_ID=SESSION_ID):
     #train_data = scale(train_data,axis=0)
     loaded_model = keras.models.load_model(currentModel + ".h5")
     print("Loaded model from disk " + currentModel)
-    win = 32
+    
     
     ## CNN predictions
     if modelCNN:
+        win = 32
         train_data = rolling_window(train_data.T,win).transpose(1,0,2)
         train_labels = train_labels[0:-win+1,:]
         train_data = train_data[:-round(win/2),:]
@@ -83,5 +83,5 @@ def run(WORKING_DIR=WORKING_DIR, SESSION_ID=SESSION_ID):
                                                                   'NREMthresh': NREMthresh, 
                                                                   'REMthresh':REMthresh})
 if __name__ == '__main__':
-	run()
+    run()
     

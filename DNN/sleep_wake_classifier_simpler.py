@@ -15,8 +15,8 @@ import random
 from sklearn.model_selection import train_test_split ##Need to randomly split data
 from main import CONFIG_PATH
 
-from hypnogram_postprocess import postProcessHypnogram
-from helper_functions import *
+from functions.hypnogram_postprocess import postProcessHypnogram
+from functions.helper_functions import *
 from sklearn.preprocessing import normalize
 from operator import itemgetter
 
