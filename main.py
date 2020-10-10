@@ -20,8 +20,6 @@ CONFIG_PATH = CONFIG_PATH /  "config"
 config = load_config(CONFIG_PATH / "my_config.yaml")
 globals().update(config)
 
-### Will need to refactor the code to make dependencies less confusing. Hacky way to call these functions for now 
-import DNN.sleep_wake_classifier_predict,  DNN.sleep_wake_classifier_simpler, DNN.sleep_wake_classifier_retrain
 ## MATLAB calls this script externally, setting the working_dir and session 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Processing path inputs from external call")
@@ -34,7 +32,8 @@ if __name__ == "__main__":
     print(args)
 	
 
-
+    ### Will need to refactor the code to make dependencies less confusing. Hacky way to call these functions for now 
+    import DNN.sleep_wake_classifier_predict,  DNN.sleep_wake_classifier_simpler, DNN.sleep_wake_classifier_retrain
     hFig = DNN.sleep_wake_classifier_predict.run(WORKING_DIR=WORKING_DIR,SESSION_ID=SESSION_ID)
     
     # sleep_wake_classifier_simpler.run()
