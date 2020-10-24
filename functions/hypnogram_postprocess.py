@@ -9,12 +9,12 @@ import numpy as np
 from statistics import mode
 import collections
 from functions.helper_functions import * 
-from main import CONFIG_PATH
+# from main import CONFIG_PATH
 
-config = load_config(CONFIG_PATH / "my_config.yaml")
-globals().update(config)
+# config = load_config(CONFIG_PATH / "my_config.yaml")
+# globals().update(config)
 ## Take the max of a rolling average of probabilities to smooth out the values
-def rollingPredictionAvg(probVal, predictedHypnogram, winsize):
+def rollingPredictionAvg(probVal, predictedHypnogram, winsize, hypFs = 2):
     numTimes  = len(probVal)
     newPredict = np.zeros(numTimes)
     newProbVal = np.zeros(numTimes)
@@ -63,7 +63,7 @@ def removeShortTransitions(predictedHypnogram):
         predictedHypnogram = fill(predictedHypnogram)
     return predictedHypnogram
 
-def postProcessHypnogram(predictedLabels, min_accuracy=0.9):
+def postProcessHypnogram(predictedLabels, min_accuracy=0.9, winsize=10):
 
     # hypnoOutput = xlsread(['G:\sleep-DNN\data\Hypnogram_02-25_spectrogram_toHour28_20valsplit_40fold_Dropout0p3_simpler.csv']); %%This baby achieved 94% accuracy
     # [probVal, predictHyp] = max(predictedLabels);

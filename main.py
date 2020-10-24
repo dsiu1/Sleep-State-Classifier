@@ -10,6 +10,7 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import os
 import argparse
+from DNN.sleep_wake_classifier import SleepClassifier
 global CONFIG_PATH, SESSION_ID,DATA_DIR, compareHypnograms
 CONFIG_PATH = Path(__file__).parent.absolute() 
 print(CONFIG_PATH)
@@ -19,6 +20,7 @@ CONFIG_PATH = CONFIG_PATH /  "config"
 # Load new test data
 config = load_config(CONFIG_PATH / "my_config.yaml")
 globals().update(config)
+
 
 ## MATLAB calls this script externally, setting the working_dir and session 
 if __name__ == "__main__":
@@ -30,13 +32,11 @@ if __name__ == "__main__":
     WORKING_DIR = args.working_dir
     SESSION_ID = args.session
     print(args)
-	
-
-    ### Will need to refactor the code to make dependencies less confusing. Hacky way to call these functions for now 
-    import DNN.sleep_wake_classifier_predict,  DNN.sleep_wake_classifier_simpler, DNN.sleep_wake_classifier_retrain
-    hFig = DNN.sleep_wake_classifier_predict.run(WORKING_DIR=WORKING_DIR,SESSION_ID=SESSION_ID)
+    sleepModel = SleepClassifier(CONFIG_PATH,WORKING_DIR,SESSION_ID)
+    # SWC.fit()
+    sleepModel.predict()
     
-    # sleep_wake_classifier_simpler.run()
-    # sleep_wake_classifier_retrain.run()
-    # 
+    # If retraining or fitting for the first time, use the fit() method
+    
+
 
