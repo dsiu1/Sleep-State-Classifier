@@ -8,7 +8,7 @@ A Jupyter Notebook is available for some basic visualizations of the dataset. Ma
 This project was built on Python 3.6. An Anaconda environment in ```./configs/environment.yml``` is prepared for installation for new users. 
 
 # Usage
-```main.py``` can be used to explore the model creation (```sleep_wake_classification_simpler.py```), prediction (```sleep_wake_classification_predict.py```) or retraining with more datasets (```sleep_wake_classification_retrain.py```).
+```main.py``` can be used to explore the model creation. Can create SleepClassifier class and call ```fit()``` or ```predict()``` 
 
 
 
